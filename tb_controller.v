@@ -1,26 +1,26 @@
-`timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 05.08.2021 23:59:37
-// Design Name: 
-// Module Name: tb_controller
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
+module tb_controller ();
 
+reg clock = 0;
+reg [266:0] instruct = 0; //266
+wire [255:0] out = 0; //255
 
-module tb_controller(
+controller dut (clock, instruct, out);
 
-    );
+always begin
+#5;
+clock = ~clock;
+#5;
+end
+
+initial begin
+instruct[260] = 1;
+instruct[259:256] = 8;
+instruct[255:0] = 12;
+#15;
+instruct[259:256] = 10;
+instruct[255:0] = 'b0100;
+#25;
+instruct[260] = 0;
+instruct[259:256] = 9;
+end
 endmodule
