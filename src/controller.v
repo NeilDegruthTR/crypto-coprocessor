@@ -23,7 +23,7 @@
 module controller(
 	input clock,
     input [31:0] instruct, //260
-    output reg [31:0] out //255
+    output reg [31:0] out = 0//255
     );
 	
 	reg [3:0] selectRead = 0;
@@ -60,8 +60,8 @@ always @(posedge clock) begin
 	1: begin //Read case
 		writeEnable = 0;
 		writeBus = 0;
-		if (counter <= roundNumber) begin
-			out = dataOut[31*counter+31-:32];
+		if (counter < roundNumber) begin
+			out = dataOut[31*counter+31 -:31];
 			nextState = 1;
 		end
 		else begin
@@ -75,9 +75,9 @@ always @(posedge clock) begin
 	2: begin
 		out = 0;
 		writeEnable = 0;
-		if (counter <= roundNumber) begin
-			writeBus[31*counter+31-:32] = instruct;
-			nextState = 1;
+		if (counter < roundNumber) begin
+			writeBus[31*counter+31 -:31] = instruct;
+			nextState = 2;
 		end
 		else begin
 			nextState = 3;
