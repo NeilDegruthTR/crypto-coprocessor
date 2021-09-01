@@ -42,10 +42,10 @@ wire [7:0] aesCSR;
 //AES registers and block
 AES aesBlock (plaintext, iv, key, aesCSR, clock, ciphertext, aesReg_o, ctrwrite, csrUpdateAES);
 
-register plaintextReg (writeEnable[0], writeBus[127:0], plaintext);
-register ivReg (writeEnable[1], writeBus[127:0], iv);
-register ciphertextReg (ctrwriteAES, ciphertext, ciphertext_o);
-csr aesCSR1 (writeBus[7:0], aesReg_o, writeEnable[3], csrUpdateAES, aesCSR);
+register plaintextReg (clock, writeEnable[0], writeBus[127:0], plaintext);
+register ivReg (clock, writeEnable[1], writeBus[127:0], iv);
+register ciphertextReg (clock, ctrwriteAES, ciphertext, ciphertext_o);
+csr aesCSR1 (clock, writeBus[7:0], aesReg_o, writeEnable[3], csrUpdateAES, aesCSR);
 
 //PRNG registers and block
 wire [127:0] seed;
@@ -56,13 +56,13 @@ wire [127:0] generated_o;
 wire [2:0] prngCSR_o;
 wire [3:0] prngCSR;
 
-register seedReg (writeEnable[8], writeBus[127:0], seed);
-register generatedReg (ctrwritePRNG, generated, generated_o);
-csr #(4) prngCSR0 (writeBus[3:0], prngCSR_o, writeEnable[10], csrUpdatePRNG, prngCSR);
+register seedReg (clock, writeEnable[8], writeBus[127:0], seed);
+register generatedReg (clock, ctrwritePRNG, generated, generated_o);
+csr #(4) prngCSR0 (clock, writeBus[3:0], prngCSR_o, writeEnable[10], csrUpdatePRNG, prngCSR);
 
 PRNG prng1 (
 	.seed (seed),
-	.generatedSeed (generated_o),
+	.generatedSeed_i (generated_o),
 	.csr(prngCSR),
 	.clock(clock),
 	.generatedReg(generated),
@@ -115,14 +115,14 @@ endmodule
 //Register
 module register # (parameter k=128)
 
-(
+( input clock,
 input we_i, input [k-1:0] writeData_i, 
 output reg [k-1:0] dataRead_o
 );
 
 reg [k-1:0] data = 0;
 
-always @(*) begin
+always @(posedge clock) begin
 
 if (we_i == 1)
 	data = writeData_i;
@@ -133,6 +133,7 @@ endmodule
 
 //CSR
 module csr #(parameter k=8) (
+	input clock,
 	input [k-1:0] writeBus,
 	input [2:0] csrUpdate,
 	input writeEnable, csrUpdateEnable,
@@ -141,7 +142,7 @@ module csr #(parameter k=8) (
 
 reg [k-1:0] csr = 0;
 
-always @(*) begin
+always @(posedge clock) begin
 
 if (writeEnable == 1) begin
 	csr[k-1:2] = writeBus[k-1:2];
@@ -251,7 +252,7 @@ reg loadSeed = 0;
 reg counter = 0;
 wire prngDone;
 wire [127:0] generatedReg_inside;
-wire [127:0] selectedSeed;
+reg [127:0] selectedSeed;
 
 lfsr PRNG (clock, prngEnable, loadSeed, selectedSeed, generatedReg_inside, prngDone);
 
