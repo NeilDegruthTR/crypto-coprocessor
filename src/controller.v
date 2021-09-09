@@ -22,8 +22,8 @@
 
 module controller(
 	input clock,
-    input [31:0] instruct, //260
-    output reg [31:0] out = 0//255
+    input [31:0] instruct,
+    output reg [31:0] out = 0
     );
 	
 	reg [3:0] selectRead = 0;
@@ -41,54 +41,147 @@ main datapath (clock, writeEnable, writeBus, selectRead, dataOut);
 
 always @(posedge clock) begin
 
-	state = nextState;
+	state <= nextState;
 
 	case (state)
 
 	0: begin
-		counter = 0;
-		out = 0;
-		writeEnable = 0;
-		writeBus = 0;
-		selectRead = instruct[30:27];
+		counter <= 0;
+		out <= 0;
+		writeEnable <= 0;
+		writeBus <= 0;
+		selectRead <= instruct[3:0];
+		case (selectRead)
+			0,1,2,4,8,9: begin
+				roundNumber <= 4;
+			end
+			5,6: begin
+				roundNumber <= 8;
+			end
+			12,13,14: begin
+				roundNumber <= 5;
+			end
+			default: begin
+				roundNumber <= 1;
+			end
+		endcase
 		if (instruct[31] == 0) //Read
-			nextState = 1;
+			nextState <= 1;
 		else //Write
-			nextState = 2;
+			nextState <= 2;
 	end
 
 	1: begin //Read case
-		writeEnable = 0;
-		writeBus = 0;
+		writeEnable <= 0;
+		writeBus <= 0;
 		if (counter < roundNumber) begin
-			out = dataOut[31*counter+31 -:31];
-			nextState = 1;
+			out <= dataOut[32*counter+31 -:31];
+			/* case (counter)
+			0: begin
+				out = dataOut[31:0];
+			end
+			
+			1: begin
+				out = dataOut[63:32];
+			end
+			
+			2: begin
+				out = dataOut[95:64];
+			end
+			
+			3: begin
+				out = dataOut[127:96];
+			end
+			
+			4: begin
+				out = dataOut[159:128];
+			end
+			
+			5: begin
+				out = dataOut[191:160];
+			end
+			
+			6: begin
+				out = dataOut[223:192];
+			end
+			
+			7: begin
+				out = dataOut[255:224];
+			end
+			
+			default: begin
+				out = dataOut[31:0];
+			end
+			
+			endcase */
+			
+			nextState <= 1;
 		end
 		else begin
-			nextState = 0;
+			nextState <= 0;
 		end
-		counter = counter + 1;
+		counter <= counter + 1;
 		
 		end //end case 1
 
 
-	2: begin
-		out = 0;
-		writeEnable = 0;
+	2: begin //Write case
+		out <= 0;
+		writeEnable <= 0;
 		if (counter < roundNumber) begin
-			writeBus[31*counter+31 -:31] = instruct;
-			nextState = 2;
+			writeBus[32*counter+31 -:31] <= instruct;
+			/* case (counter)
+			0: begin
+				writeBus[31:0] = instruct;
+			end
+			
+			1: begin
+				writeBus[63:32] = instruct;
+			end
+			
+			2: begin
+				writeBus[95:64] = instruct;
+			end
+			
+			3: begin
+				writeBus[127:96] = instruct;
+			end
+			
+			4: begin
+				writeBus[159:128] = instruct;
+			end
+			
+			5: begin
+				writeBus[191:160] = instruct;
+			end
+			
+			6: begin
+				writeBus[223:192] = instruct;
+			end
+			
+			7: begin
+				writeBus[255:224] = instruct;
+			end
+			
+			default: begin
+				writeBus[31:0] = instruct;
+			end
+			
+			endcase */
+			
+			
+			nextState <= 2;
 		end
 		else begin
-			nextState = 3;
+			nextState <= 3;
 		end
-		counter = counter + 1;
+		counter <= counter + 1;
 	end
 
 	3: begin
-		writeEnable[selectRead] = 1; 
-		nextState = 0;
-		out = 0;
+		writeEnable[selectRead] <= 1; 
+		nextState <= 0;
+		out <= 0;
 	end
 
 	endcase //end case states
@@ -98,20 +191,7 @@ always @(posedge clock) begin
 
 	if (state == 0) begin
 		
-		case (instruct[30:27])
-			0,1,2,4,8,9: begin
-				roundNumber = 4;
-			end
-			5,6: begin
-				roundNumber = 8;
-			end
-			12,13,14: begin
-				roundNumber = 5;
-			end
-			default: begin
-				roundNumber = 1;
-			end
-		endcase
+		
 		
 	end
 
