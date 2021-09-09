@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="tb_controller_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="tb_controller" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="26000fs"></ZoomStartTime>
+      <ZoomEndTime time="35601fs"></ZoomEndTime>
+      <Cursor1Time time="27720fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="387"></NameColumnWidth>
+      <ValueColumnWidth column_width="189"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="17" />
+   <wvobject fp_name="/tb_controller/clock" type="logic">
+      <obj_property name="ElementShortName">clock</obj_property>
+      <obj_property name="ObjectShortName">clock</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/instruct" type="array">
+      <obj_property name="ElementShortName">instruct[31:0]</obj_property>
+      <obj_property name="ObjectShortName">instruct[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/out" type="array">
+      <obj_property name="ElementShortName">out[31:0]</obj_property>
+      <obj_property name="ObjectShortName">out[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/dut/writeBus" type="array">
+      <obj_property name="ElementShortName">writeBus[255:0]</obj_property>
+      <obj_property name="ObjectShortName">writeBus[255:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/dut/counter" type="array">
+      <obj_property name="ElementShortName">counter[31:0]</obj_property>
+      <obj_property name="ObjectShortName">counter[31:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/dut/datapath/aesCSR1/csr" type="array">
+      <obj_property name="ElementShortName">csr[7:0]</obj_property>
+      <obj_property name="ObjectShortName">csr[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/dut/datapath/aesBlock/startFlag" type="logic">
+      <obj_property name="ElementShortName">startFlag</obj_property>
+      <obj_property name="ObjectShortName">startFlag</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/dut/datapath/aesBlock/state" type="array">
+      <obj_property name="ElementShortName">state[3:0]</obj_property>
+      <obj_property name="ObjectShortName">state[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/dut/datapath/aesBlock/enable" type="logic">
+      <obj_property name="ElementShortName">enable</obj_property>
+      <obj_property name="ObjectShortName">enable</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/dut/datapath/aesBlock/start" type="logic">
+      <obj_property name="ElementShortName">start</obj_property>
+      <obj_property name="ObjectShortName">start</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/dut/datapath/aesBlock/loadPlaintext" type="logic">
+      <obj_property name="ElementShortName">loadPlaintext</obj_property>
+      <obj_property name="ObjectShortName">loadPlaintext</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/dut/datapath/aesBlock/ciphertext" type="array">
+      <obj_property name="ElementShortName">ciphertext[127:0]</obj_property>
+      <obj_property name="ObjectShortName">ciphertext[127:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/dut/datapath/aesBlock/keyExpansionDone" type="logic">
+      <obj_property name="ElementShortName">keyExpansionDone</obj_property>
+      <obj_property name="ObjectShortName">keyExpansionDone</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/dut/datapath/aesBlock/aes0/o_data_valid" type="logic">
+      <obj_property name="ElementShortName">o_data_valid</obj_property>
+      <obj_property name="ObjectShortName">o_data_valid</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/dut/datapath/aesBlock/aesFinish" type="logic">
+      <obj_property name="ElementShortName">aesFinish</obj_property>
+      <obj_property name="ObjectShortName">aesFinish</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/dut/datapath/aesBlock/aes0/reset" type="logic">
+      <obj_property name="ElementShortName">reset</obj_property>
+      <obj_property name="ObjectShortName">reset</obj_property>
+   </wvobject>
+   <wvobject fp_name="/tb_controller/dut/datapath/aesBlock/key" type="array">
+      <obj_property name="ElementShortName">key[127:0]</obj_property>
+      <obj_property name="ObjectShortName">key[127:0]</obj_property>
+   </wvobject>
+</wave_config>
