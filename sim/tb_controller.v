@@ -13,18 +13,19 @@ clock = ~clock;
 end
 
 initial begin
-
-instruct = 32'h88000000;
-#20;
-instruct = 32'h12000001;
-#15;
-instruct = 32'h38000002;
-#15;
-instruct = 32'h58000003;
-#20;
-instruct = 32'hC8000004;
-#75;
-instruct = 32'h08000000;
+	instruct = 32'h80000000;
+	#20;
+	instruct = 32'hec0d7191;
+	#15;
+	instruct = 32'h6eaf70a0;
+	#15;
+	instruct = 32'h864cdfe0;
+	#20;
+	instruct = 32'hdda97ca4;
+	#80;
+	instruct = 32'h80000003;
+	#15;
+	instruct = 32'h4;
 
 
 /* instruct[260] = 1;
