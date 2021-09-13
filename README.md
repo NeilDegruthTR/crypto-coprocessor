@@ -1,6 +1,8 @@
 # crypto-coprocessor
 
-Crypto coprocessor project written in Verilog.
+Crypto coprocessor (CCP) project written in Verilog.
+
+docs folder contains documents about CCP.
 
 src folder contains design files.
 
