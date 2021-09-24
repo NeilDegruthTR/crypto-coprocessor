@@ -1,8 +1,8 @@
 module tb_controller ();
 
 reg clock = 0;
-reg [31:0] instruct = 0; //266
-wire [31:0] out; //255
+reg [31:0] instruct = 0;
+wire [31:0] out;
 
 controller dut (clock, instruct, out);
 
@@ -13,29 +13,19 @@ clock = ~clock;
 end
 
 initial begin
-	instruct = 32'h80000000;
+	/* instruct = 32'h80000000; //ef0bc156 ed8ff212 23f247b3 e0318a99
+	#45;
+	instruct = 32'he0318a99;
+	#15;
+	instruct = 32'h23f247b3;
+	#15;
+	instruct = 32'hed8ff212;
 	#20;
-	instruct = 32'hec0d7191;
-	#15;
-	instruct = 32'h6eaf70a0;
-	#15;
-	instruct = 32'h864cdfe0;
-	#20;
-	instruct = 32'hdda97ca4;
-	#80;
-	instruct = 32'h80000003;
-	#15;
+	instruct = 32'hef0bc156;
+	#120; */
+	instruct = 32'h80000007;
+	#30;
 	instruct = 32'h4;
 
-
-/* instruct[260] = 1;
-instruct[259:256] = 8;
-instruct[255:0] = 12;
-#15;
-instruct[259:256] = 10;
-instruct[255:0] = 'b0100;
-#25;
-instruct[260] = 0;
-instruct[259:256] = 9; */
 end
 endmodule
