@@ -52,10 +52,10 @@ always @(posedge clock) begin
 		writeBus <= 0;
 		selectRead <= instruct[3:0];
 		case (selectRead)
-			0,1,2,4,8,9: begin
+			0,1,2,8,9: begin
 				roundNumber <= 4;
 			end
-			5,6: begin
+			4,5,6: begin
 				roundNumber <= 8;
 			end
 			12,13,14: begin
@@ -75,8 +75,8 @@ always @(posedge clock) begin
 		writeEnable <= 0;
 		writeBus <= 0;
 		if (counter < roundNumber) begin
-			out <= dataOut[32*counter+31 -:31];
-			/* case (counter)
+			//out <= dataOut[32*counter+31 -:31];
+			case (counter)
 			0: begin
 				out = dataOut[31:0];
 			end
@@ -113,7 +113,7 @@ always @(posedge clock) begin
 				out = dataOut[31:0];
 			end
 			
-			endcase */
+			endcase
 			
 			nextState <= 1;
 		end
@@ -129,8 +129,8 @@ always @(posedge clock) begin
 		out <= 0;
 		writeEnable <= 0;
 		if (counter < roundNumber) begin
-			writeBus[32*counter+31 -:31] <= instruct;
-			/* case (counter)
+			//writeBus[32*counter+31 -:31] <= instruct;
+			case (counter)
 			0: begin
 				writeBus[31:0] = instruct;
 			end
@@ -167,7 +167,7 @@ always @(posedge clock) begin
 				writeBus[31:0] = instruct;
 			end
 			
-			endcase */
+			endcase
 			
 			
 			nextState <= 2;
