@@ -67,17 +67,17 @@ SHA2wrapper sha2block(
 	.csrUpdate(shaCSRupdateEnable)
 );
 
-register #(256) shaPlaintextReg (clock, writeEnable[4], writeBus, shaPlaintext);
+register #(448) shaPlaintextReg (clock, writeEnable[4], writeBus, shaPlaintext);
 register #(256) digest0 (clock, digest0writeEnable, digest0writeBus, digest0out); //Read-only
 register #(256) digest1 (clock, writeEnable[6], writeBus, digest1out); // Read/Write
 
-csr #(3) sha2CSR0 (
-.clock(clock),
-.writeBus(writeBus[2:0]),
-.csrUpdate(shaCSRupdateBus),
-.writeEnable(writeEnable[7]),
-.csrUpdateEnable(shaCSRupdateEnable),
-.csr_o(sha2CSR)
+csr #(67) sha2CSR0 (
+	.clock(clock),
+	.writeBus(writeBus[2:0]),
+	.csrUpdate(shaCSRupdateBus),
+	.writeEnable(writeEnable[7]),
+	.csrUpdateEnable(shaCSRupdateEnable),
+	.csr_o(sha2CSR)
 );
 
 //PRNG registers and block
@@ -158,25 +158,6 @@ always @(*) begin
 
 end
 
-endmodule
-
-//Register
-module register # (parameter k=128)
-
-( input clock,
-input we_i, input [k-1:0] writeData_i, 
-output reg [k-1:0] dataRead_o
-);
-
-reg [k-1:0] data = 0;
-
-always @(posedge clock) begin
-
-if (we_i == 1)
-	data = writeData_i;
-	
-dataRead_o = data;
-end
 endmodule
 
 //CSR
