@@ -1,6 +1,9 @@
+
+
+
 module SHA2wrapper (
-	input [255:0] plaintext,
-	input [2:0] sha2CSR,
+	input [447:0] plaintext,
+	input [66:0] sha2CSR,
 	input clock,
 	output [255:0] digest,
 	output reg [2:0] sha2CSR_o = 0,
@@ -41,7 +44,7 @@ begin
 
 state = nextState;
 
-if (sha2CSR[2] == 1) begin
+if (sha2CSR[66] == 1) begin
 	startFlag = 1;
 	state = 0;
 end
@@ -49,7 +52,7 @@ end
 if (startFlag == 1) begin
 
 case (state)
-8'd0: begin //Update csr and reset
+8'd0: begin //Pad the plaintext, update csr and reset
 	reset <= 1;
 	regwrite <= 0;
 	sha2CSR_o <= 2;
