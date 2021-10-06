@@ -23,14 +23,19 @@
 module main(
     input clock,
 	input [15:0] writeEnable,
-	input [255:0] writeBus,
+	input [447:0] writeBus,
 	input [3:0] selectRead,
-	output reg [255:0] dataOut
+	input [127:0] privateKey,
+    input [159:0] q,
+    input [1023:0] p,
+    input [1023:0] g,
+    input [1023:0] y,
+	output reg [447:0] dataOut
     );
 
 //AES registers and block
 wire [127:0] plaintext, iv;
-wire [127:0] key = 128'h2b7e151628aed2a6abf7158809cf4f3c;
+//wire [127:0] key = 128'h2b7e151628aed2a6abf7158809cf4f3c;
 
 wire [127:0] ciphertext;
 wire [127:0] ciphertext_o;
@@ -40,7 +45,7 @@ wire ctrwriteAES;
 
 wire [7:0] aesCSR;
 
-AESwrapper aesBlock (plaintext, iv, key, aesCSR, clock, ciphertext, aesReg_o, ctrwriteAES, csrUpdateAES);
+AESwrapper aesBlock (plaintext, iv, privateKey, aesCSR, clock, ciphertext, aesReg_o, ctrwriteAES, csrUpdateAES);
 
 register plaintextReg (clock, writeEnable[0], writeBus[127:0], plaintext);
 register ivReg (clock, writeEnable[1], writeBus[127:0], iv);
@@ -48,14 +53,14 @@ register ciphertextReg (clock, ctrwriteAES, ciphertext, ciphertext_o);
 csr aesCSR1 (clock, writeBus[7:0], aesReg_o, writeEnable[3], csrUpdateAES, aesCSR);
 
 //SHA2 registers and block
-wire [255:0] shaPlaintext;
+wire [447:0] shaPlaintext;
 wire [255:0] digest0writeBus;
 wire digest0writeEnable;
 wire [255:0] digest0out;
 wire [255:0] digest1out;
 wire [2:0] shaCSRupdateBus;
 wire shaCSRupdateEnable;
-wire [2:0] sha2CSR;
+wire [66:0] sha2CSR;
 
 SHA2wrapper sha2block(
 	.plaintext(shaPlaintext),
@@ -69,11 +74,11 @@ SHA2wrapper sha2block(
 
 register #(448) shaPlaintextReg (clock, writeEnable[4], writeBus, shaPlaintext);
 register #(256) digest0 (clock, digest0writeEnable, digest0writeBus, digest0out); //Read-only
-register #(256) digest1 (clock, writeEnable[6], writeBus, digest1out); // Read/Write
+register #(256) digest1 (clock, writeEnable[6], writeBus[255:0], digest1out); // Read/Write
 
 csr #(67) sha2CSR0 (
 	.clock(clock),
-	.writeBus(writeBus[2:0]),
+	.writeBus(writeBus[66:0]),
 	.csrUpdate(shaCSRupdateBus),
 	.writeEnable(writeEnable[7]),
 	.csrUpdateEnable(shaCSRupdateEnable),
@@ -108,12 +113,13 @@ PRNG prng1 (
 wire comp_csr;
 wire csr0;
 
-comp comp1 (digest0out, digest1out, regRout, regVout, csr0, comp_csr);
-
-//DSA registers and block
 wire [159:0] regRout;
 wire [159:0] regSout;
 wire [159:0] regVout;
+
+comp comp1 (digest0out, digest1out, regRout, regVout, csr0, comp_csr);
+
+//DSA registers and block
 
 register #(160) regR(clock, writeEnable[12], writeBus[159:0], regRout);
 register #(160) regS(clock, writeEnable[13], writeBus[159:0], regSout);
@@ -123,31 +129,31 @@ always @(*) begin
 
 	case (selectRead)
       4'b0000: begin
-				  dataOut[255:128] = 0;
+				  //dataOut[255:128] = 0;
                   dataOut[127:0] = plaintext;
                end
       4'b0001: begin
-                  dataOut[255:128] = 0;
+                  //dataOut[255:128] = 0;
                   dataOut[127:0] = iv;
                end
       4'b0010: begin
-                  dataOut[255:128] = 0;
+                  //dataOut[255:128] = 0;
                   dataOut[127:0] = ciphertext_o;
                end
       4'b0011: begin
-                  dataOut[255:128] = 0;
+                  //dataOut[255:128] = 0;
                   dataOut[127:0] = aesCSR;
                end
 	  4'b0100: begin
-				  dataOut[255:128] = 0;
+				  //dataOut[255:128] = 0;
                   dataOut[127:0] = seed;
                end
       4'b0101: begin
-                  dataOut[255:128] = 0;
+                  //dataOut[255:128] = 0;
                   dataOut[127:0] = generated_o;
                end
       4'b0110: begin
-                  dataOut[255:128] = 0;
+                  //dataOut[255:128] = 0;
                   dataOut[127:0] = prngCSR;
                end
       default: begin

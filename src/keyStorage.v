@@ -32,7 +32,7 @@ module keyStorage(
     output [1023:0] y
     );
 	
-	reg [1024:0] writeBus;
+	reg [1023:0] writeBus = 0;
 	
 	wire [127:0] privateKey0_o;
 	wire [127:0] privateKey1_o;
@@ -47,7 +47,6 @@ module keyStorage(
 	assign privateKey = privateKey0_o ^ privateKey1_o;
 	
 	always @(posedge clock) begin
-		if (writeEnable != 0)
 			writeBus[32*sliceSelector + 31 -:32] <= keyInput;
 	end
 endmodule

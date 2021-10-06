@@ -11,7 +11,7 @@ module SHA2wrapper (
 	output reg csrUpdate = 0
 );
 
-reg [511:0] shaPlaintext = 'h61626380000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000018;
+reg [511:0] shaPlaintext = 0; //= 'h61626380000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000018;
 
 reg reset = 0;
 reg [3:0] state = 0;
@@ -26,6 +26,8 @@ reg load = 0;
 wire empty;
 wire [255:0] hash;
 wire shaFinish;
+
+integer shiftAmount = 0;
 
 assign digest = hash;
 
@@ -42,11 +44,12 @@ sha256for1chunk sha2560
 always @(posedge clock)
 begin
 
-state = nextState;
+state <= nextState;
 
-if (sha2CSR[66] == 1) begin
-	startFlag = 1;
-	state = 0;
+if (sha2CSR[2] == 1) begin
+	startFlag <= 1;
+	nextState <= 0;
+	shaPlaintext <= 0;
 end
 
 if (startFlag == 1) begin
@@ -59,12 +62,19 @@ case (state)
 	csrUpdate <= 1;
 	load <= 0;
 	
-	if (counter > 6)
-		nextState = 1;
-	else
-		nextState = 0;
+	shiftAmount <= 447 - sha2CSR[66:3] + 64;
 	
-	counter = counter + 1;
+	shaPlaintext <= {plaintext[446:0], 1'b1} << shiftAmount;
+	
+	shaPlaintext[63:0] <= sha2CSR[66:3];
+	
+	if (counter > 6)
+		nextState <= 1;
+	else begin
+		nextState <= 0;
+		counter <= counter + 1;
+	end
+	
 end
 
 8'd1: begin //Start hashing
@@ -107,12 +117,14 @@ end
 	nextState <= 0;
 	startFlag <= 0;
 	load <= 0;
+	shaPlaintext <= 0;
 end
 
 default: begin
-	regwrite = 0;
-	csrUpdate = 0;
-	nextState = 0;
+	regwrite <= 0;
+	csrUpdate <= 0;
+	nextState <= 0;
+	shaPlaintext <= 0;
 end
 endcase
 
