@@ -41,18 +41,8 @@ end
 
 initial begin
     keyInput = 32'h00000000;
-    instruct = 32'h40000004;
+	instruct = 32'h40000003;
 	#20;
-	instruct = 32'h616263;
-	#10;
-	instruct = 0;
-	#45;
-	instruct = 32'h40000007;
-	#20;
-	instruct = 32'hC4;
-	#10;
-	instruct = 32'h00;
-	#10;
-	instruct = 32'h00;
+	instruct = 32'h84;
 end
 endmodule
