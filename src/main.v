@@ -76,14 +76,7 @@ register #(448) shaPlaintextReg (clock, writeEnable[4], writeBus, shaPlaintext);
 register #(256) digest0 (clock, digest0writeEnable, digest0writeBus, digest0out); //Read-only
 register #(256) digest1 (clock, writeEnable[6], writeBus[255:0], digest1out); // Read/Write
 
-csr #(67) sha2CSR0 (
-	.clock(clock),
-	.writeBus(writeBus[66:0]),
-	.csrUpdate(shaCSRupdateBus),
-	.writeEnable(writeEnable[7]),
-	.csrUpdateEnable(shaCSRupdateEnable),
-	.csr_o(sha2CSR)
-);
+csr #(67) sha2CSR0 (.clock(clock), .writeBus(writeBus[66:0]), .csrUpdate(shaCSRupdateBus), .writeEnable(writeEnable[7]), .csrUpdateEnable(shaCSRupdateEnable), .csr_o(sha2CSR));
 
 //PRNG registers and block
 wire [127:0] seed;
