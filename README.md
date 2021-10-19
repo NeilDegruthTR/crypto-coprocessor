@@ -2,6 +2,8 @@
 
 A crypto coprocessor (CCP) which is written in Verilog.
 
+IT'S NOT COMPLETED YET.
+
 docs folder contains documents about CCP.
 
 src folder contains design files.
