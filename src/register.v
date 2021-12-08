@@ -25,16 +25,17 @@ module register # (parameter k=128)
 
 ( input clock,
 input we_i, input [k-1:0] writeData_i, 
-output reg [k-1:0] dataRead_o
+output [k-1:0] dataRead_o
 );
 
 reg [k-1:0] data = 0;
+
+assign dataRead_o = data;
 
 always @(posedge clock) begin
 
 if (we_i == 1)
 	data = writeData_i;
-	
-dataRead_o = data;
+
 end
 endmodule

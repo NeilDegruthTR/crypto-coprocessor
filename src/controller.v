@@ -25,166 +25,211 @@ module controller(
     input [31:0] instruct,
 	input [447:0] dataOut,
     output reg [31:0] out = 0,
-	output reg [4:0] sliceSelector = 0,
-	output reg [5:0] writeEnableKey = 0,
-	output reg [3:0] selectRead = 0,
-	output reg [15:0] writeEnable = 0,
+	output reg [4:0] sliceSelector,
+	output reg [5:0] writeEnableKey,
+	output reg [3:0] selectRead,
+	output reg [16:0] writeEnable = 0,
 	output reg [447:0] writeBus = 0
     );
 	
 	reg [2:0] state = 0;
 	reg [2:0] nextState = 0;
-
-	integer roundNumber = 0;
-	integer counter = 0;
-
+	
+	reg [4:0] roundNumber;
+	reg [4:0] counter;
+	reg [4:0] counterNext;
 
 always @(posedge clock) begin
 
-	state <= nextState;
+	case (state)
+		0: begin
+			selectRead <= instruct[3:0];
+			out <= 0;
+			writeBus <= 0;
+			if (instruct[31:30] == 2'b00) begin
+				case (instruct[4:0])
+				0,1,2,8,9: begin
+					roundNumber <= 4;
+				end
+				5,6: begin
+					roundNumber <= 8;
+				end
+				12,13,14: begin
+					roundNumber <= 5;
+				end
+				4: begin
+					roundNumber <= 14;
+				end
+				7: begin
+					roundNumber <= 3;
+				end
+				16: begin
+				    roundNumber <= 2;
+				end
+				default: begin
+					roundNumber <= 1;
+				end
+				endcase
+			end
+			else if (instruct[31:30] == 2'b01) begin
+				case (instruct[4:0])
+				0,1,2,8,9: begin
+					roundNumber <= 4;
+				end
+				5,6: begin
+					roundNumber <= 8;
+				end
+				12,13,14: begin
+					roundNumber <= 5;
+				end
+				4: begin
+					roundNumber <= 14;
+				end
+				7: begin
+					roundNumber <= 3;
+				end
+				3: begin
+					roundNumber <= 1;
+				end
+				16: begin
+                    roundNumber <= 2;
+                end
+				default: begin
+					roundNumber <= 1;
+				end
+			endcase
+			end
+			else if (instruct[31:30] == 2'b10) begin
+				case (instruct[3:0])
+				0,1: begin
+					roundNumber <= 4;
+				end
+				2: begin
+					roundNumber <= 10;
+				end
+				3,4,5: begin
+					roundNumber <= 64;
+				end
+				default: begin
+					roundNumber <= 1;
+				end
+				endcase
+				end
+			else begin
+				roundNumber <= 0;
+			end
+		end
+		
+		1: begin
+			out <= dataOut[32*counter+31 -:32];
+			writeBus <= 0;
+		end
+		
+		2: begin
+			writeBus[32*counter+31 -:32] <= instruct;
+			out <= 0;
+		end
+		
+		3: begin
+			writeBus <= 0;
+			out <= 0;
+		end
+		
+		4: begin
+			writeBus <= 0;
+			out <= 0;
+		end
+	endcase
 	
+	counter <= counterNext;
+	state <= nextState;
+end
+	
+always @(*) begin
 	case (state)
 
 		0: begin
-		counter <= 0;
-		sliceSelector <= 0;
-		writeEnableKey <= 0;
-		out <= 0;
-		writeEnable <= 0;
-		writeBus <= 0;
-		selectRead <= instruct[3:0];
-
-		if (instruct[31:30] == 2'b00) begin
-			case (selectRead)
-			0,1,2,8,9: begin
-				roundNumber <= 4;
+			sliceSelector = 0;
+			writeEnableKey = 0;
+			writeEnable = 0;
+			counterNext = 0;
+			
+			if (instruct[31:30] == 2'b00)
+				nextState = 1;
+			else if (instruct[31:30] == 2'b01)
+				nextState = 2;
+			else if (instruct[31:30] == 2'b10)
+				nextState = 4;
+			else begin
+				nextState = 0;
 			end
-			5,6: begin
-				roundNumber <= 8;
-			end
-			12,13,14: begin
-				roundNumber <= 5;
-			end
-			4: begin
-				roundNumber <= 14;
-			end
-			7: begin
-				roundNumber <= 3;
-			end
-			default: begin
-				roundNumber <= 1;
-			end
-			endcase
-			nextState <= 1;
-		end
-		else if (instruct[31:30] == 2'b01) begin
-			case (selectRead)
-			0,1,2,8,9: begin
-				roundNumber <= 4;
-			end
-			5,6: begin
-				roundNumber <= 8;
-			end
-			12,13,14: begin
-				roundNumber <= 5;
-			end
-			4: begin
-				roundNumber <= 14;
-			end
-			7: begin
-				roundNumber <= 3;
-			end
-			default: begin
-				roundNumber <= 1;
-		end
-		endcase
-			nextState <= 2;
-		end
-		else if (instruct[31:30] == 2'b10) begin
-			case (selectRead)
-			0,1: begin
-				roundNumber <= 4;
-			end
-			2: begin
-				roundNumber <= 5;
-			end
-			3,4,5: begin
-				roundNumber <= 32;
-			end
-			default: begin
-				roundNumber <= 1;
-			end
-			endcase
-			nextState <= 4;
-			end
-			else
-				nextState <= 0;
-
+		
 		end
 
 		1: begin //Read case
-			writeEnable <= 0;
-			writeBus <= 0;
-			sliceSelector <= 0;
-			writeEnableKey <= 0;
-			if (counter < roundNumber) begin
-				out <= dataOut[32*counter+31 -:32];
-				nextState <= 1;
+			writeEnable = 0;
+			sliceSelector = 0;
+			writeEnableKey = 0;
+			
+			if (counter < (roundNumber - 1)) begin
+				nextState = 1;
+				counterNext = counter + 1;
 			end
 			else begin
-				nextState <= 0;
+				counterNext = counterNext;
+				nextState = 0;
 			end
-			counter <= counter + 1;
+			
 
 		end //end case 1
 
 
 		2: begin //Write case
-			out <= 0;
-			writeEnable <= 0;
-			sliceSelector <= 0;
-			writeEnableKey <= 0;
-			if (counter < roundNumber) begin
-				writeBus[32*counter+31 -:32] <= instruct;
-				nextState <= 2;
+			writeEnable = 0;
+			sliceSelector = 0;
+			writeEnableKey = 0;
+			if (counter < (roundNumber - 1)) begin
+				nextState = 2;
+				counterNext = counter + 1;
 			end
 			else begin
-				nextState <= 3;
+				counterNext = counterNext;
+				nextState = 3;
 			end
-			counter <= counter + 1;
+			
+			
 		end
 
 		3: begin
-			writeEnable[selectRead] <= 1; 
-			nextState <= 0;
-			out <= 0;
-			sliceSelector <= 0;
-			writeEnableKey <= 0;
-			counter <= 0;
+			writeEnable[selectRead] = 1; 
+			nextState = 0;
+			sliceSelector = 0;
+			writeEnableKey = 0;
+			counterNext = 0;
 		end
 
 		4: begin
-			out <= 0;
-			writeEnableKey[selectRead] <= 1;
-			if (counter < roundNumber) begin
-				sliceSelector <= counter;
-				counter <= counter + 1;
-				nextState <= 4;
+
+			writeEnableKey[selectRead] = 1;
+			if (counter < (roundNumber - 1)) begin
+				counterNext = counter + 1;
+				sliceSelector = counter;
+				nextState = 4;
 			end
 			else begin
-			sliceSelector <= 0;
-			nextState <= 0;
-			writeEnableKey <= 0;
-			counter <= 0;
+				counterNext = counterNext;
+				sliceSelector = 0;
+				nextState = 0;
+				writeEnableKey = 0;
 			end
 		end
 
 		default: begin
-			out <= 0;
-			sliceSelector <= 0;
-			writeEnableKey <= 0;
-			counter <= 0;
-			nextState <= 0;
+			counterNext = 0;
+			sliceSelector = 0;
+			writeEnableKey = 0;
+			writeEnable = 0;
+			nextState = 0;
 		end
 
 		endcase //end case states

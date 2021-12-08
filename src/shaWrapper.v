@@ -1,9 +1,7 @@
-
-
-
 module SHA2wrapper (
 	input [447:0] plaintext,
-	input [66:0] sha2CSR,
+	input [2:0] sha2CSR,
+	input [63:0] messageSize,
 	input clock,
 	output [255:0] digest,
 	output reg [2:0] sha2CSR_o = 0,
@@ -62,11 +60,11 @@ case (state)
 	csrUpdate <= 1;
 	load <= 0;
 	
-	shiftAmount <= 447 - sha2CSR[66:3] + 64;
+	shiftAmount <= 447 - messageSize + 64;
 	
 	shaPlaintext <= {plaintext[446:0], 1'b1} << shiftAmount;
 	
-	shaPlaintext[63:0] <= sha2CSR[66:3];
+	shaPlaintext[63:0] <= messageSize;
 	
 	if (counter > 6)
 		nextState <= 1;
