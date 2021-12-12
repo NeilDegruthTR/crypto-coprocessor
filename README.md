@@ -1,6 +1,6 @@
 # crypto-coprocessor
 
-A cryptographic coprocessor (CCP) which is written in Verilog.
+A cryptographic coprocessor (CCP) written in Verilog HDL.
 
 **IMPORTANT: It works on behavioural simulation but the synthesis never finishes because DSA verificiation contains multiple amounts of 2048 bit D-FF and latches.**
 
