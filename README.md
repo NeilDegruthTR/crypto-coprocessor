@@ -2,7 +2,7 @@
 
 A cryptographic coprocessor (CCP) written in Verilog HDL.
 
-**IMPORTANT: It works on behavioral simulation but the synthesis never finishes because DSA verification block contains multiple amounts of 2048 bit D-FF and latches.**
+**IMPORTANT: It works on behavioral simulation but the synthesis never finishes because DSA verification block contains multiple amounts of 2048 and 4096 bit D-FF and latches.**
 
 ## File contents:
 - `docs` folder contains documents about CCP.
